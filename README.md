@@ -25,6 +25,8 @@ The skill helps an agent:
 
 This is not an email relay, transport agent, Graph app, EWS app, CRM, or signature SaaS.
 
+It is also not a full Exclaimer clone. The default v1 does not include directory sync, an admin panel, campaign banners, analytics, server-side compliance disclaimers, non-Outlook coverage, or dynamic rule targeting.
+
 The default v1 design is static and minimal:
 
 ```text
@@ -35,11 +37,42 @@ Outlook compose opens
 -> mail still sends directly through Microsoft 365
 ```
 
+## Fit And Limits
+
+Use this skill when the goal is to replace a relay-based signature path with a lightweight Outlook-only add-in for a small team or simple rollout.
+
+Good fit:
+
+- Outlook web, Mac, Windows, iOS, or Android are the clients in scope.
+- Signature details can start from a static JSON file.
+- Users have one or a few approved signature layouts.
+- You want mail to keep sending directly through Microsoft 365.
+- You want a low-cost static host and minimal permissions.
+- Manual updates to signature data are acceptable for v1.
+
+Not a good v1 fit:
+
+- Signatures must appear from Apple Mail, Gmail, SMTP apps, or every possible outbound client.
+- Signature details must sync automatically from Entra ID, HR, CRM, or another source of truth.
+- Different departments, offices, campaigns, or recipient types need complex rules.
+- Marketing banners, analytics, delegated editing, approval workflows, or central dashboards are required.
+- Legal/compliance text must be stamped server-side even if Outlook is offline or the add-in host is unavailable.
+
+For those cases, keep a server-side product or plan a v2 with a backend/API, generated JSON, admin UI, logging, and clear operational ownership.
+
 ## Why This Approach
 
 Exclaimer and similar tools often sit in the mail path or leave behind connectors, transport rules, and enterprise apps. For small teams that only need reliable Outlook signatures, that can be more machinery than necessary.
 
 An Outlook event-based add-in keeps the logic at compose time. The tradeoff is that it only covers Outlook clients that support Office add-ins. It does not cover Apple Mail, Gmail, or other mail apps.
+
+## How Multiple Users Work
+
+The add-in does not invent contact details. It fetches `config/signatures.json` from the static host. That file contains one entry per sender email address and one or more HTML templates.
+
+At compose time, Outlook provides the current From address. The runtime lowercases that address, looks it up in `users`, renders the matching template with that user's fields, and inserts the result with `body.setSignatureAsync(...)`.
+
+For v1, adding or changing a user means editing `signatures.json` and redeploying the static site. For larger teams, a v2 can generate that JSON from Entra ID, HR, a spreadsheet, or an admin UI.
 
 ## Install The Skill
 
@@ -66,6 +99,7 @@ Before building for a customer, collect:
 - Approved signature design or HTML.
 - Logo/images and desired image delivery approach.
 - Sender email addresses and per-user signature data.
+- Source of truth for names, titles, phone numbers, footers, and any department/location variants.
 - Client matrix: Outlook web, Mac, iOS, Android, Windows classic/new.
 - Exclaimer state: DNS, connectors, transport rules, enterprise apps, and user signatures.
 

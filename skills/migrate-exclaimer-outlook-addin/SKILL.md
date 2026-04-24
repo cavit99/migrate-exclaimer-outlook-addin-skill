@@ -9,6 +9,8 @@ description: Build and troubleshoot a private Outlook event-based signature add-
 
 Build a client-side Outlook add-in, not a mail relay. Mail should continue flowing directly through Microsoft 365. The add-in only edits the compose body inside supported Outlook clients.
 
+This skill is a migration pattern for static-config Outlook signatures, not a full Exclaimer clone. Before building, classify whether the customer fits the v1 model or needs a server-side product/v2 backend. Read `references/scope-and-fit.md` when the user asks whether this replaces Exclaimer, how multiple users work, where contact details come from, or what features are out of scope.
+
 Use this default v1 architecture unless the user explicitly asks for more:
 
 ```text
@@ -24,6 +26,8 @@ Outlook compose opens
 Keep v1 static-only: no Graph, no EWS, no backend database, no telemetry endpoint, no send hook, no mail transport rule, no Exclaimer relay, and no automatic disabling of saved Outlook signatures unless the user accepts the consequences.
 
 Treat signature design as customer-supplied input. Do not reuse a previous customer's layout, copy, phone numbers, legal footer, logo size, colors, or social links. The starter template is only a working scaffold; replace `config.signatures.json` templates and user data with the customer's approved signature HTML/content.
+
+For multiple users, the runtime fetches `config/signatures.json`, reads the current From address, and selects `users[lowercaseSenderEmail]`. Manual JSON maintenance is acceptable for small v1 rollouts. If the user needs automatic Entra/HR/CRM sync, delegated editing, campaign rules, analytics, or non-Outlook coverage, document that as outside v1 and propose a v2/backend or a server-side signature product.
 
 ## Critical Choices
 
@@ -56,6 +60,7 @@ Treat signature design as customer-supplied input. Do not reuse a previous custo
 ## Resources
 
 - `assets/site-template/`: generic static site starter with manifest/runtime/config/SWA headers. Its sample signature template is illustrative only and must be replaced or approved per customer.
+- `references/scope-and-fit.md`: fit checklist, non-goals, multiple-user data model, and v2 upgrade paths.
 - `references/security-and-risk.md`: security posture, permissions, mail-flow impact, SLA tradeoffs.
 - `references/signature-html.md`: practical signature HTML guidance and rendering checks.
 - `scripts/render_signature_preview.py`: create a local HTML preview from `signatures.json`.

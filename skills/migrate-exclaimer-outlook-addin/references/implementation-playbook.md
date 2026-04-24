@@ -16,6 +16,7 @@ Collect these before changing anything:
 - Customer domain for the add-in host, for example `sign.example.com`.
 - Approved signature design: screenshot, HTML, brand guidelines, required contact fields, legal footer copy, logo/social icon requirements, light/dark expectations, and new-mail vs reply/forward variants.
 - Sender email addresses and display data for each signature.
+- Source of truth for display names, job titles, phone numbers, department/location variants, legal footer text, and any special cases. For v1 this can be manually transcribed into static JSON; for larger teams identify whether a v2 generator is needed.
 - Logo PNG/JPG and desired rendered width.
 - Outlook clients in scope: web, Mac new UI, iOS, Android, new Windows, classic Windows.
 - Microsoft 365 admin account and Azure/GitHub access model.
@@ -105,6 +106,18 @@ Common prebuilt HTML/safe URL tokens:
 ```
 
 If a customer's design needs different fields, add them to each user object and reference them with `{{fieldName}}`, or add a small prebuilt token in the runtime if the value must be HTML.
+
+## Multiple Users And Data Source
+
+The runtime uses the From address as the lookup key:
+
+```text
+current From address -> lower-case email -> users[email] -> selected template -> setSignatureAsync
+```
+
+Each user who needs a signature must have an entry in `config/signatures.json`. If a person sends from multiple addresses, add entries for each sender address or add `OnMessageFromChanged` support in a later version so the signature can refresh after the From account changes.
+
+For small rollouts, keep the JSON hand-maintained and review changes like code. For larger migrations, generate the JSON from a controlled source such as Entra ID, HR export, CRM, or a spreadsheet, then commit/deploy the generated file. Do not quietly promise live directory sync unless the project includes that generator/backend.
 
 ## Buildless Project Checks
 
