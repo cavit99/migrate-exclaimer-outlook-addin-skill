@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migrate Exclaimer to Outlook Add-in"
+  short_description: "Build Outlook signature add-ins on Azure"
+  default_prompt: "Use $migrate-exclaimer-outlook-addin to migrate an Exclaimer signature setup to a private Outlook add-in hosted on Azure Static Web Apps."

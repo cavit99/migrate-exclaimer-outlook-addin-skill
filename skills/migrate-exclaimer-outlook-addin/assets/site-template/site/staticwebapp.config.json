@@ -1,0 +1,40 @@
+{
+  "globalHeaders": {
+    "Access-Control-Allow-Origin": "*",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "routes": [
+    {
+      "route": "/manifest.xml",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/src/runtime/*",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/config/signatures.json",
+      "headers": {
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "route": "/assets/*.{png,jpg,jpeg,svg,ico}",
+      "headers": {
+        "Cache-Control": "public, max-age=604800"
+      }
+    }
+  ],
+  "mimeTypes": {
+    ".html": "text/html",
+    ".js": "application/javascript",
+    ".json": "application/json",
+    ".png": "image/png",
+    ".xml": "application/xml"
+  }
+}
